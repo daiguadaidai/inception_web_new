@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}Inception表结构评审系统{% endblock %}
+{% block content %}
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="/">Home</a>
+            </li>
+            <li>
+                <a href="/ldapconfig">运维工具</a>
+            </li>
+            <li class="active">Inception表结构评审系统</li>
+        </ul><!-- .breadcrumb -->
+    </div>
+    <div class="page-content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-content">
+                    <div class="page-header h3 text-primary">
+                        <i class="icon-eye-open"></i>
+                        审核SQL
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">请输入需要审核的MySQL数据库SQL</div>
+                                <div class="panel-body">
+                                    <form class="form-horizontal" role="form" action="/inception/inception_check" method='post'>
+                                        <div class="form-group">
+                                            <div class="col-sm-9">
+                                                <textarea id="form-field-2" placeholder="请输入需要审核的SQL语句" class="col-xs-10 col-sm-12" name="mysql_structure" rows="15">{{abc}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-1">
+                                                请选择数据库:
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select class="col-sm-12" id='db_config_name', name='db_config_name'>
+                                                    <option value=''>请选择需要审核的数据库</option>
+                                                    {% for key, name_alias in html_select.iteritems() %}
+                                                    <option value='{{ name_alias["name"] }}' {% if db_config_name == name_alias["name"] %}selected='true'{% endif %}>{{ name_alias["name"] }}({{ name_alias["alias"] }})</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="space-4"></div>
+                                        <div class="clearfix form-actions">
+                                            <div class="col-md-offset-0 col-md-5">
+                                                <button class="btn btn-info" type="submit">
+                                                    <i class="icon-ok bigger-110"></i>
+                                                    检测 
+                                                </button>
+                                                &nbsp; &nbsp; &nbsp;
+                                                <button class="btn" type="reset">
+                                                    <i class="icon-undo bigger-110"></i>
+                                                    重置
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="hr hr-24"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if sql_review != {} %}
+                    <div class="col-md-9">
+                        <div class="panel-footer">
+                            <table class="table">
+                                <tr>
+                                    <th>执行顺序</th>
+                                    <th>执行状态</th>
+                                    <th>错误级别</th>
+                                    <th>执行状态</th>
+                                    <th>影响行数</th>
+                                    <th>内部序列</th>
+                                    <th>备库名</th>
+                                    <th>执行时间</th>
+                                    <th>sha1哈希值</th>
+                                </tr>
+                                 
+                                {% for line in sql_review: %}
+                                    {% if line['errlevel'] == 0 %}
+                                <tr class='success'>
+                                    {% else %}
+                                <tr class='danger'>
+                                    {% endif %}
+
+                                    <td>{{ line['ID'] }}</td>
+                                    <td>{{ line['stage'] }}</td>
+                                    <td>{{ line['errlevel'] }}</td>
+                                    <td>{{ line['stagestatus'] }}</td>
+                                    <td>{{ line['Affected_rows'] }}</td>
+                                    <td>{{ line['sequence'] }}</td>
+                                    <td>{{ line['backup_dbname'] }}</td>
+                                    <td>{{ line['execute_time'] }}</td>
+                                    <td>{{ line['sqlsha1'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>错误信息:</th>
+                                    <th colspan='8'>{{ line['errormessage'] }}</th>
+                                </tr>
+                                <tr>
+                                    <th>执行SQL:</th>
+                                    <th colspan='8'><pre>{{ line['SQL'] }};</pre></th>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if pagination %}
+                    <tr>
+                        <div class="dataTables_paginate paging_bootstrap">
+                            <div class="panel-footer"></div>
+                            {{ macros.pagination_widget(pagination, '.servers') }}
+                        </div>
+                    </tr>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

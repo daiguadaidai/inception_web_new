@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 #coding=utf-8
-__author__ = 'lihui'
+__author__ = 'chenhao'
 
 from flask_wtf import Form
 from wtforms import TextAreaField,SubmitField,validators

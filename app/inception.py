@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+__author__ = 'chenhao'
+
 from inc_db_conf import IncDbConf
 
 import MySQLdb
@@ -156,7 +158,6 @@ class Inception(object):
         Return: 审核的SQL结果
         Raise: None
         """
-
         db_config = self.db_configs.get(name, None)
 
         print db_config

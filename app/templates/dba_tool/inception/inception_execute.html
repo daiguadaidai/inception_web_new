@@ -27,7 +27,7 @@
                         执行SQL
                     </div>
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="">
                             <div class="panel panel-danger">
                                 <div class="panel-heading">请输入需要执行的MySQL数据库SQL</div>
                                 <div class="panel-body">
@@ -38,11 +38,9 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <div class="col-sm-1">
+                                            <div class="col-sm-6">
                                                 请选择数据库:
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <select class="col-sm-12" id='db_config_name', name='db_config_name'>
+                                                <select id='db_config_name', name='db_config_name'>
                                                     <option value=''>请选择需要执行的数据库</option>
                                                     {% for key, name_alias in html_select.iteritems() %}
                                                     <option value='{{ name_alias["name"] }}' {% if db_config_name == name_alias["name"] %}selected='true'{% endif %}>{{ name_alias["name"] }}({{ name_alias["alias"] }})</option>
@@ -53,8 +51,8 @@
                                         <div class="space-4"></div>
                                         <div class="clearfix form-actions">
                                             <div class="col-md-offset-0 col-md-5">
-                                                <button class="btn btn-danger" type="submit">
-                                                    <i class="icon-ok bigger-110"></i>
+                                                <button id="btn_submit" class="btn btn-danger" type="submit">
+                                                    <i class="icon-play-circle bigger-110"></i>
                                                     执行
                                                 </button>
                                                 &nbsp; &nbsp; &nbsp;
@@ -71,7 +69,7 @@
                         </div>
                     </div>
                     {% if sql_review != {} %}
-                    <div class="col-md-9">
+                    <div>
                         <div class="panel-footer">
                             <table class="table">
                                 <tr>
@@ -129,4 +127,28 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block customer %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // 提交表单时验证等待时间, 超过10s自动转跳
+    $("form").submit(function(e){
+        $("#btn_submit").attr("disabled","true"); // 禁用button
+
+    });
+
+    // $("#btn_submit").click(function() {
+    //     // 10秒后检查提交按钮状态, 如果为不可用则转跳页面
+    //     setTimeout(function () { 
+
+    //         document.querySelector('form').addEventListener('submit',function(e){
+    //             e.preventDefault();
+    //         },false);
+
+    //         location.href = "/inception/inception_check";
+    //     }, 5000);
+    // });
+});
+</script>
 {% endblock %}

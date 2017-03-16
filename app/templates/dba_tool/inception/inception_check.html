@@ -27,22 +27,20 @@
                         审核SQL
                     </div>
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="">
                             <div class="panel panel-primary">
                                 <div class="panel-heading">请输入需要审核的MySQL数据库SQL</div>
                                 <div class="panel-body">
                                     <form class="form-horizontal" role="form" action="/inception/inception_check" method='post'>
                                         <div class="form-group">
                                             <div class="col-sm-9">
-                                                <textarea id="form-field-2" placeholder="请输入需要审核的SQL语句" class="col-xs-10 col-sm-12" name="mysql_structure" rows="15">{{abc}}</textarea>
+                                                <textarea id="form-field-2" placeholder="请输入需要审核的SQL语句" class="col-sm-12" name="mysql_structure" rows="15">{{abc}}</textarea>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <div class="col-sm-1">
+                                            <div class="col-sm-6">
                                                 请选择数据库:
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <select class="col-sm-12" id='db_config_name', name='db_config_name'>
+                                                <select id='db_config_name', name='db_config_name'>
                                                     <option value=''>请选择需要审核的数据库</option>
                                                     {% for key, name_alias in html_select.iteritems() %}
                                                     <option value='{{ name_alias["name"] }}' {% if db_config_name == name_alias["name"] %}selected='true'{% endif %}>{{ name_alias["name"] }}({{ name_alias["alias"] }})</option>
@@ -71,7 +69,7 @@
                         </div>
                     </div>
                     {% if sql_review != {} %}
-                    <div class="col-md-9">
+                    <div>
                         <div class="panel-footer">
                             <table class="table">
                                 <tr>

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+from inc_db_conf import IncDbConf
+
 import MySQLdb
 
 
@@ -8,27 +10,44 @@ class Inception(object):
     """需要审核的数据库配置保存在这边的变量中"""
 
     def __init__(self):
-        self.db_configs = {
-            'xxxxx': {
-                'host': '127.0.0.1',
-                'port': 3306,
-                'username': 'xxx',
-                'password': 'xxx',
-                'database': '',
-                'name': 'xxx',
-                'alias': '133测试线-xx',
-            },
+        inc_db_conf = IncDbConf()
 
-            'yyyyy': {
-                'host': '127.0.0.1',
-                'port': 3306,
-                'username': 'yyy',
-                'password': 'yyy',
-                'database': '',
-                'name': 'yyy',
-                'alias': '133测试线-yy',
-            },
-        }
+        # 获取 Inception 软件配置信息
+        self.inc_configs = inc_db_conf.inc_configs
+
+        # 获取目标审核库信息数据库而配置信息
+        self.db_configs = inc_db_conf.db_configs
+
+    def _row_to_dicts(self, col_names=[], rows=[]):
+        """将给定的字段名和结果集拼凑成一个dict结果集
+        Args
+            col_names: 字段名 ['age', 'name']
+        Return
+            返回一个dict数组
+            [{'age': 11, 'name': 'HH'},
+             {'age': 12, 'name': 'ZS'}]
+        Raise: None 
+        """
+
+        return [
+            self._row_to_dict(col_names, row)
+            for row in rows
+        ]
+
+
+    def _row_to_dict(self, col_names=[], row=[]):
+        """将给定的字段名和结果集拼凑成一个dict结果集
+        Args
+            col_names: 字段名 ['age', 'name']
+        Return
+            返回一个dict
+            {'age': 11, 'name': 'HH'}
+        Raise: None
+        """
+
+        return dict(zip(col_names, row))
+
+
 
     def get_db_config(self, db_key=''):
         """获取通过传入的一个key获取数据库连接信息
@@ -110,31 +129,14 @@ class Inception(object):
     
     
         try:
-            conn = MySQLdb.connect(host = '120.55.117.133',
-                                   user = 'root',
-                                   passwd = '',
-                                   db = '',
-                                   port = 6669,
-                                   use_unicode = True,
-                                   charset = "utf8")
-            cur=conn.cursor()
-            ret=cur.execute(sql)
-            result=cur.fetchall()
-    
-            sql_review = []
+            conn = MySQLdb.connect(**self.inc_configs['two'])
+            cur = conn.cursor()
+            ret = cur.execute(sql)
+            result = cur.fetchall()
     
             field_names = [i[0] for i in cur.description]
     
-            print ' | '.join(field_names)
-    
-            for row in result:
-    
-                review_dict = dict(zip(field_names, row))
-                sql_review.append(review_dict)
-    
-                print ' | '.join([str(col) for col in row])
-    
-            num_fields = len(cur.description) 
+            sql_review = self._row_to_dicts(field_names, result)
     
             cur.close()
             conn.close()
@@ -171,6 +173,21 @@ class Inception(object):
                                      sql = sql)
 
         return sql_review
+
+    def execute_inc_sql(self, sql=''):
+        """执行inception SQL获取inception相关信息
+        Args
+            sql: 需要执行的sql
+        Return
+            返回执行的结果
+        Raise: None
+        """
+        conn = MySQLdb.connect(self.inc_configs['two'])
+        cur = conn.cursor()
+        ret = cur.execute(sql)
+        result = cur.fetchall()
+
+        return result
 
 def main():
     inception = Inception()

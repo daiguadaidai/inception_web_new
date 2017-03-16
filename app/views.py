@@ -67,6 +67,8 @@ def inception_execute():
     sql_review = []
 
     if request.method == "POST":
+        import time
+        time.sleep(10)
         # 获取需要在 Inception 中执行的参数
         mysql_structure = request.form.get('mysql_structure')
         db_config_name = request.form.get('db_config_name')

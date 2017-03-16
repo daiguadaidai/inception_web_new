@@ -87,3 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# vi temp file Add By HH 2017-03-14
+.swp

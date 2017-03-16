@@ -94,7 +94,7 @@ def inception_execute():
 
         if join_time >= join_timeout:
             print 'join timeout {join_time}s'.format(join_time = join_time)
-            return redirect(url_for('.inception_check'))
+            return redirect(url_for('.inception_task_list'))
  
 
         return render_template('dba_tool/inception/inception_execute.html',
@@ -106,3 +106,27 @@ def inception_execute():
     return render_template('dba_tool/inception/inception_execute.html',
                            html_select = html_select)
 
+# Inception 任务列表
+@app.route('/inception/inception_task_list',methods=['GET','POST'])
+def inception_task_list():
+    """Inceptioni 任务列表"""
+
+    inception = Inception()
+    processlist = inception.get_osc_processlist()
+
+    return render_template('dba_tool/inception/inception_task_list.html',
+                           processlist = processlist)
+
+# Inception 任务详细信息
+@app.route('/inception/inception_task',methods=['GET','POST'])
+def inception_task():
+    """Inceptioni 任务列表"""
+
+    inception = Inception()
+
+    if request.method == "GET":
+        sqlsha1 = request.args.get('sqlsha1')
+        percent = inception.get_osc_percent(sqlsha1 = sqlsha1)
+
+    return render_template('dba_tool/inception/inception_task.html',
+                           percent = percent)

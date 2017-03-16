@@ -100,7 +100,7 @@
                     <ul class="submenu">
                        <li class="{% if request.path == '/inception/inception_check' %} active {% endif %}">
                            <a href="/inception/inception_check">
-                               <i class="icon-eye-open"></i>
+                               <i class="icon-ok"></i>
                                审核SQL
                            </a>
                        </li>
@@ -108,6 +108,12 @@
                            <a href="/inception/inception_execute">
                                <i class="icon-play-circle"></i>
                                执行SQL
+                           </a>
+                       </li>
+                       <li class="{% if request.path == '/inception/inception_task_list' %} active {% endif %}">
+                           <a href="/inception/inception_task_list">
+                               <i class="icon-tasks"></i>
+                               任务列表
                            </a>
                        </li>
                     </ul>

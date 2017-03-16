@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% import "_macros.html" as macros %}
-{% block title %}Inception表结构评审系统{% endblock %}
+{% block title %}SQL语法审核系统{% endblock %}
 {% block content %}
 <div class="main-content">
     <div class="breadcrumbs" id="breadcrumbs">
@@ -15,7 +15,7 @@
             <li>
                 <a href="/ldapconfig">运维工具</a>
             </li>
-            <li class="active">Inception表结构评审系统</li>
+            <li class="active">SQL语法审核系统</li>
         </ul><!-- .breadcrumb -->
     </div>
     <div class="page-content">
@@ -129,7 +129,7 @@
 </div>
 {% endblock %}
 
-{% block customer %}
+{% block customer_script %}
 <script type="text/javascript">
 $(document).ready(function(){
     // 提交表单时验证等待时间, 超过10s自动转跳

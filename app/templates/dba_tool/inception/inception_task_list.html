@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}SQL语法审核系统{% endblock %}
+{% block content %}
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="/">Home</a>
+            </li>
+            <li>
+                <a href="/ldapconfig">运维工具</a>
+            </li>
+            <li class="active">SQL语法审核系统</li>
+        </ul><!-- .breadcrumb -->
+    </div>
+    <div class="page-content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-content">
+                    <div class="page-header h3 text-primary">
+                        <i class="icon-tasks"></i>
+                        任务列表
+                    </div>
+                    <div class="row">
+                        <div class="">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    以下是正在执行的数据库操作任务
+                                    <button class="btn btn-xs pull-right" id="reload_processlist">
+                                        <i class="icon-refresh"></i>
+                                    </button>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table">
+                                        <tr>
+                                            <th>数据库名</th>
+                                            <th>表名</th>
+                                            <th>sha1哈希值</th>
+                                            <th>进度(%)</th>
+                                            <th>预计时间(min)</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        {% for item in processlist: %}
+                                        <tr>
+                                            <td>{{ item['DBNAME'] }}</td>
+                                            <td>{{ item['TABLENAME'] }}</td>
+                                            <td><code>{{ item['SQLSHA1'] }}</code></td>
+                                            <td><code>{{ item['PERCENT'] }}%</code></td>
+                                            <td><code>{{ item['REMAINTIME'] }}</code></td>
+                                            <td>
+                                                <button class="btn btn-info btn-xs" onclick="inception_task('{{ item['SQLSHA1'] }}')" title="详细">
+                                                    <i class="icon-eye-open"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-xs" onclick="inception_task_stop('{{ item['SQLSHA1'] }}')" title="停止">
+                                                    <i class="icon-ban-circle"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>执行SQL:</th>
+                                            <th colspan='5'><pre>{{ item['COMMAND'] }};</pre></th>
+                                        </tr>
+                                        {% endfor%}
+                                    </table>
+                                    {% if pagination %}
+                                    <tr>
+                                        <div class="dataTables_paginate paging_bootstrap">
+                                            <div class="panel-footer"></div>
+                                            {{ macros.pagination_widget(pagination, '.servers') }}
+                                        </div>
+                                    </tr>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customer_script %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#reload_processlist").click(function() {
+        window.location.reload();
+    });
+});
+
+// 查看 Inception 任务详细信息
+function inception_task(sqlsha1) {
+    location.href = "/inception/inception_task?sqlsha1=" + sqlsha1;
+}
+
+// 停止 Inception 任务
+function inception_task_stop(sqlsha1) {
+    location.href = "/inception/inception_task_stop?sqlsha1=" + sqlsha1;
+}
+</script>
+{% endblock %}

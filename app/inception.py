@@ -46,6 +46,8 @@ class Inception(object):
             {'age': 11, 'name': 'HH'}
         Raise: None
         """
+        if not col_names:
+            return None
 
         return dict(zip(col_names, row))
 
@@ -175,7 +177,7 @@ class Inception(object):
 
         return sql_review
 
-    def execute_inc_sql(self, sql=''):
+    def execute_inc_sql(self, sql='', is_fetchall=True):
         """执行inception SQL获取inception相关信息
         Args
             sql: 需要执行的sql
@@ -183,12 +185,47 @@ class Inception(object):
             返回执行的结果
         Raise: None
         """
-        conn = MySQLdb.connect(self.inc_configs['two'])
-        cur = conn.cursor()
-        ret = cur.execute(sql)
-        result = cur.fetchall()
+        try:
+            conn = MySQLdb.connect(**self.inc_configs['two'])
+            cur = conn.cursor()
+            ret = cur.execute(sql)
 
-        return result
+            if is_fetchall:
+                result = cur.fetchall()
+            else:
+                result = cur.fetchone()
+
+            cur.close()
+            conn.close()
+        except MySQLdb.Error,e:
+            print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+
+        field_names = [i[0] for i in cur.description] if cur.description else None
+
+        return field_names, result
+
+    def get_osc_processlist(self):
+        """获得Inception正在执行的任务列表"""
+        sql = 'inception get osc processlist;'
+
+        field_names, result = self.execute_inc_sql(sql = sql)
+        processlist = self._row_to_dicts(field_names, result)
+
+        return processlist
+
+    def get_osc_percent(self, sqlsha1=''):
+        """获得Inception正在执行的任务"""
+
+        if not sqlsha1:
+            return {}
+
+        sql = 'inception get osc_percent "{sqlsha1}";'.format(sqlsha1 = sqlsha1)
+
+        field_names, result = self.execute_inc_sql(sql = sql, is_fetchall = False)
+        percent = self._row_to_dict(field_names, result)
+
+        return percent
+
 
 def main():
     inception = Inception()

@@ -109,7 +109,7 @@ def inception_execute():
 # Inception 任务列表
 @app.route('/inception/inception_task_list',methods=['GET','POST'])
 def inception_task_list():
-    """Inceptioni 任务列表"""
+    """Inception 任务列表"""
 
     inception = Inception()
     processlist = inception.get_osc_processlist()
@@ -120,7 +120,7 @@ def inception_task_list():
 # Inception 任务详细信息
 @app.route('/inception/inception_task',methods=['GET','POST'])
 def inception_task():
-    """Inceptioni 任务列表"""
+    """Inception 任务列表"""
 
     inception = Inception()
 
@@ -130,3 +130,18 @@ def inception_task():
 
     return render_template('dba_tool/inception/inception_task.html',
                            percent = percent)
+
+
+# 停止Inception任务
+@app.route('/inception/inception_task_stop',methods=['GET', 'POST'])
+def inception_task_stop():
+    """停止Inception任务"""
+
+    inception = Inception()
+
+    if request.method == "POST":
+        sqlsha1 = request.form.get('sqlsha1')
+        is_ok, result = inception.inc_stop_alter(sqlsha1 = sqlsha1)
+
+        import simplejson as json
+        return json.dumps({'is_ok': is_ok, 'result': result})

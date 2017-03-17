@@ -198,7 +198,8 @@ class Inception(object):
             cur.close()
             conn.close()
         except MySQLdb.Error,e:
-            print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+            result = "Mysql Error %d: %s" % (e.args[0], e.args[1])
+            print result
 
         field_names = [i[0] for i in cur.description] if cur.description else None
 
@@ -225,6 +226,18 @@ class Inception(object):
         percent = self._row_to_dict(field_names, result)
 
         return percent
+
+    def inc_stop_alter(self, sqlsha1=''):
+        """停止某个Inception任务"""
+
+        if not sqlsha1:
+            return False, None
+
+        sql = 'inception stop alter "{sqlsha1}";'.format(sqlsha1 = sqlsha1)
+
+        field_names, result = self.execute_inc_sql(sql = sql, is_fetchall = False)
+
+        return False if result else True, result
 
 
 def main():

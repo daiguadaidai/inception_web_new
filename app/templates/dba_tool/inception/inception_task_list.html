@@ -56,8 +56,8 @@
                                                 <button class="btn btn-info btn-xs" onclick="inception_task('{{ item['SQLSHA1'] }}')" title="详细">
                                                     <i class="icon-eye-open"></i>
                                                 </button>
-                                                <button class="btn btn-danger btn-xs" onclick="inception_task_stop('{{ item['SQLSHA1'] }}')" title="停止">
-                                                    <i class="icon-ban-circle"></i>
+                                                <button class="btn btn-danger btn-xs" onclick="inception_task_stop('{{ item['DBNAME'] }}', '{{ item['TABLENAME'] }}', '{{ item['SQLSHA1'] }}')" title="停止">
+                                                    <i class="icon-off"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -100,8 +100,68 @@ function inception_task(sqlsha1) {
 }
 
 // 停止 Inception 任务
-function inception_task_stop(sqlsha1) {
-    location.href = "/inception/inception_task_stop?sqlsha1=" + sqlsha1;
+function inception_task_stop(db_name, table_name, sqlsha1) {
+    bootbox.confirm({
+        buttons: {
+            confirm: {
+                label: '停止',
+                className: 'btn-danger'
+            },
+            cancel: {
+                label: '取消',
+                className: 'btn-default'
+            }
+        },
+        message: "<h2>是否需要停止该任务?<h2>",
+        callback: function(result) {
+            if(result) { // 确认停止后使用Ajax停止任务, 之后刷新本业
+                $.ajax({
+                    url: "/inception/inception_task_stop",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        sqlsha1: sqlsha1
+                    }
+                }).done(function(data) {
+                    message = '';
+                    title = '';
+                    if(data['is_ok'] == true) {
+                       title = '停止成功';
+                       message += "<h3><i class='icon-ok'></i>停止成功</h3>";
+                       message += "请复制下面SQL, 并依次执行以下SQL:";
+                       message += "<pre>";
+                       message += "DROP TRIGGER " + db_name + ".pt_osc_" + db_name + "_" + table_name + "_ins;\n";
+                       message += "DROP TRIGGER " + db_name + ".pt_osc_" + db_name + "_" + table_name + "_upd;\n";
+                       message += "DROP TRIGGER " + db_name + ".pt_osc_" + db_name + "_" + table_name + "_del;\n";
+                       message += "DROP TABLE " + db_name + "._" + table_name + "_new;\n";
+                       message += "</pre>";
+                    } else {
+                       title = '停止失败';
+                       message = "<h3><i class='icon-remove'></i>停止失败</h3>";
+                       message += "<code>";
+                       message += data["result"];
+                       message += "</code>";
+                    }
+
+                    bootbox.alert({
+                        buttons: {
+                           ok: {
+                                label: '关闭',
+                                className: 'btn-primary'
+                            }
+                        },
+                        message: message,
+                        title: title,
+                        callback: function() {
+                            window.location.reload();
+                        }, 
+                    });
+                });
+            }
+        },
+        title: "停止任务",
+    });
+
 }
 </script>
 {% endblock %}

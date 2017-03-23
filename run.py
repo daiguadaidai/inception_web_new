@@ -6,8 +6,10 @@
 from __future__ import unicode_literals
 __author__ = 'chenhao'
 
-from app import app,manager
+from app import app
+from app import manager
 import sys
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 

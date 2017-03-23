@@ -4,28 +4,97 @@
 __author__ = 'chenhao'
 
 from app import app
+from app import lm
 from flask import render_template
 from flask import flash
 from flask import redirect
 from flask import session
 from flask import url_for
 from flask import request
+from flask import g
+from flask_login import login_user
+from flask_login import login_required
+from flask_login import current_user
+from flask_login import logout_user
 from forms import InceptionTableStructure
+from forms import LoginForm
 from inception import Inception
 from inception_thread import InceptionThread
+from user_opration import UserOpration
+from user_opration import User
 
 import MySQLdb
 import time
 
-#首页
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
+    """首页"""
+
     return render_template("index.html")
 
-#Inception_评审SQL
+
+@lm.user_loader
+def load_user(user_id):
+    user_opration = UserOpration()
+    user = user_opration.get_user(key = user_id)
+    session['username'] = user.username
+    return user
+
+
+@app.before_request
+def before_request():
+    g.user = current_user 
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """登录界面"""
+
+    form = LoginForm()
+
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user_opration = UserOpration()
+        user = user_opration.get_user_by_name_pass(username=username,
+                                                   password=password)
+
+        if form.validate_on_submit(): # 验证通过, 登录用户
+            login_user(user)
+
+            return redirect(url_for('.index'))
+        else: # 验证失败
+            if not user_opration.exists(username=username, password=password): # 如果已经登录过则退出
+                logout_user()
+
+            flash('用户名密码验证失败!')
+
+            return render_template("login.html", form = form)
+
+    if request.method == 'GET':
+
+        if g.user.__dict__: # 如果没有退出用户, 转跳到 index 页面
+            return redirect(url_for('.index'))
+        
+        return render_template("login.html", form = form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @app.route('/inception/inception_check',methods=['GET','POST'])
 def inception_check():
+    """Inception_评审SQL"""
+
+    if not g.user.__dict__: # 如果没有登录就不显示 username
+        session['username'] = ''
 
     form = InceptionTableStructure()
 
@@ -57,9 +126,10 @@ def inception_check():
                            html_select = html_select)
 
 
-#Inception_执行SQL
 @app.route('/inception/inception_execute',methods=['GET','POST'])
+@login_required
 def inception_execute():
+    """Inception_执行SQL"""
 
     form = InceptionTableStructure()
 
@@ -106,8 +176,9 @@ def inception_execute():
     return render_template('dba_tool/inception/inception_execute.html',
                            html_select = html_select)
 
-# Inception 任务列表
+
 @app.route('/inception/inception_task_list',methods=['GET','POST'])
+@login_required
 def inception_task_list():
     """Inception 任务列表"""
 
@@ -117,10 +188,11 @@ def inception_task_list():
     return render_template('dba_tool/inception/inception_task_list.html',
                            processlist = processlist)
 
-# Inception 任务详细信息
+
 @app.route('/inception/inception_task',methods=['GET','POST'])
+@login_required
 def inception_task():
-    """Inception 任务列表"""
+    """Inception 任务详细信息"""
 
     inception = Inception()
 
@@ -132,8 +204,8 @@ def inception_task():
                            percent = percent)
 
 
-# 停止Inception任务
 @app.route('/inception/inception_task_stop',methods=['GET', 'POST'])
+@login_required
 def inception_task_stop():
     """停止Inception任务"""
 

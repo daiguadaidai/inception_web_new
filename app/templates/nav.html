@@ -98,7 +98,7 @@
 
                 <li class="{% if '/inception' in request.path %} active open {% endif %}">
                     <a href="/#" class="dropdown-toggle">
-                       <i class="blue icon-group  bigger-110"></i>
+                       <i class="icon-group"></i>
                        SQL语法审核系统
                        <b class="arrow icon-angle-down"></b>
                     </a>
@@ -123,6 +123,23 @@
                        </li>
                     </ul>
                 </li>
+
+                <li class="{% if '/mysqltool' in request.path %} active open {% endif %}">
+                    <a href="/#" class="dropdown-toggle">
+                       <i class="icon-wrench"></i>
+                       MySQL工具
+                       <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                       <li class="{% if request.path == '/mysqltool/mysqldiff' %} active {% endif %}">
+                           <a href="/mysqltool/mysqldiff">
+                               <i class="icon-adjust"></i>
+                               表结构对比
+                           </a>
+                       </li>
+                    </ul>
+                </li>
+
             </ul><!-- /.nav-list -->
 
             <div class="sidebar-collapse" id="sidebar-collapse">

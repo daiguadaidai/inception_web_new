@@ -9,12 +9,12 @@ class UserOpration(object):
         admin_user = User()
         admin_user.id = 'Admin.Admin'
         admin_user.username = 'Admin'
-        admin_user.password = 'Admin'
+        admin_user.password = 'ADMIN123456'
 
         guest_user = User()
         guest_user.id = 'guest.guest'
         guest_user.username = 'guest'
-        guest_user.password = 'guest'
+        guest_user.password = 'guest123456'
 
         self.users = {
             admin_user.id: admin_user,

@@ -109,7 +109,8 @@ class Inception(object):
         return html_select
 
     def sql_review_by_detail(self, host='127.0.0.1', port=3306,
-            is_execute=False, username='root', password='root', sql=''):
+                             is_execute=False, username='root',
+                             password='root', sql='', database='test'):
     
         action = '--execute=1' if is_execute else '--check=1'
     
@@ -119,7 +120,7 @@ class Inception(object):
     
         inception_magic_start;
     
-        use nbuy52db;
+        use {database};
     
         {sql}
     
@@ -129,7 +130,8 @@ class Inception(object):
                    host = host,
                    port = port,
                    action = action,
-                   sql = sql)
+                   sql = sql,
+                   database = database)
     
     
         try:
@@ -173,7 +175,8 @@ class Inception(object):
                                      is_execute = is_execute,
                                      username = db_config.get('username', 'root'),
                                      password = db_config.get('password', 'root'),
-                                     sql = sql)
+                                     sql = sql,
+                                     database = db_config.get('database', 'test'))
 
         return sql_review
 

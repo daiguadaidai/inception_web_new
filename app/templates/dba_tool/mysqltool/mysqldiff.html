@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block title %}SQL语法审核系统{% endblock %}
+{% block content %}
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="/">Home</a>
+            </li>
+            <li>
+                <a href="/ldapconfig">运维工具</a>
+            </li>
+            <li class="active">MySQL工具</li>
+        </ul><!-- .breadcrumb -->
+    </div>
+    <div class="page-content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="page-content">
+                    <div class="page-header h3 text-primary">
+                        <i class="icon-adjust"></i>
+                        表结构对比
+                    </div>
+                    <div class="row">
+                        <div>
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">请输入需要对比的数据源</div>
+                                <div class="panel-body">
+
+                                    <form class="form-horizontal">
+                                        <fieldset>
+                                            <legend>完整数据库数据源</legend> 
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">
+                                                    IP地址:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="com_host" class="col-sm-12" value="127.0.0.1" placeholder="请输入IP地址"/>
+                                                </div>
+                                                <div class="col-sm-1 text-right">
+                                                    端口:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="number" id="com_port" class="col-sm-12" value="3306" placeholder="请输入端口" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">         
+                                                    用户名:
+                                                </div>
+                                                <div class="col-sm-4">         
+                                                    <input type="text" id="com_username" class="col-sm-12" placeholder="请输入用户名" />
+                                                </div>
+                                                <div class="col-sm-1 text-right">         
+                                                    密码:
+                                                </div>
+                                                <div class="col-sm-4">         
+                                                    <input type="password" id="com_password" class="col-sm-12" placeholder="请输入密码" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">         
+                                                    数据库:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="com_database" class="col-sm-12" placeholder="请输入数据库名" />
+                                                </div>
+                                                <div class="col-sm-1 text-right">
+                                                    表名:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="com_table" class="col-sm-12" placeholder="请输入表名" />
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+
+                                    <br />
+
+                                    <form class="form-horizontal">
+                                        <fieldset>
+                                            <legend class="text-danger">非完整数据库数据源</legend>
+
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">
+                                                    IP地址:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="fra_host" class="col-sm-12" value="127.0.0.1" placeholder="请输入IP地址" />
+                                                </div>
+                                                <div class="col-sm-1 text-right">
+                                                    端口:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="number" id="fra_port" class="col-sm-12" value="3306" placeholder="请输入端口" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">         
+                                                    用户名:
+                                                </div>
+                                                <div class="col-sm-4">         
+                                                    <input type="text" id="fra_username" class="col-sm-12" placeholder="请输入用户名" />
+                                                </div>
+                                                <div class="col-sm-1 text-right">         
+                                                    密码:
+                                                </div>
+                                                <div class="col-sm-4">         
+                                                    <input type="password" id="fra_password" class="col-sm-12" placeholder="请输入秘密" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">         
+                                                    数据库:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="fra_database" class="col-sm-12" placeholder="请输入数据库名" />
+                                                </div>
+                                                <div class="col-sm-1 text-right">
+                                                    表名:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <input type="text" id="fra_table" class="col-sm-12" placeholder="请输入表明" />
+                                                </div>
+                                            </div>
+
+                                        </fieldset>
+                                    </form>
+
+                                    <form class="form-horizontal">
+                                        <fieldset>
+                                            <legend></legend>
+                                            <div class="form-group">
+                                                <div class="col-sm-1 text-right">         
+                                                    输出类型:
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <select id='diff_type' class="col-sm-12">
+                                                        <option value='sql'>SQL格式输出</option>
+                                                        <option value='differ'>差异性文本输出</option>
+                                                        <option value='context'>完整内容输出</option>
+                                                        <option value='unified'>统一格式</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+
+                                    <div class="clearfix form-actions">
+                                        <div class="col-md-offset-0 col-md-5">
+                                            <button id="btn-diff" class="btn btn-info" type="buttom">
+                                                <i class="icon-adjust bigger-110"></i>
+                                                比较
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" id="stderr"> <!-- 对比结果集错误信息 -->
+                        </div>
+
+                        <div class="col-md-12" id="stdout"> <!-- 对比结果集正确信息 -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customer_script %}
+<script type="text/javascript">
+$(document).ready(function(){
+    // 点击按钮对数据进行比较
+    $("#btn-diff").click(function(){
+        // 进行对比
+        compare_chema();
+    });
+});
+
+function compare_chema() {
+    // 禁止按钮
+    $("#btn-diff").attr('disabled',"true");
+    
+    // 获得完整数据库数据源
+    com_host = $("#com_host").val();
+    com_port = $("#com_port").val();
+    com_username = $("#com_username").val();
+    com_password = $("#com_password").val();
+    com_database = $("#com_database").val();
+    com_table = $("#com_table").val();
+    
+    // 获得非完整数据库数据源
+    fra_host = $("#fra_host").val();
+    fra_port = $("#fra_port").val();
+    fra_username = $("#fra_username").val();
+    fra_password = $("#fra_password").val();
+    fra_database = $("#fra_database").val();
+    fra_table = $("#fra_table").val();
+    
+    diff_type = $("#diff_type").val();
+
+    $.ajax({
+        url: "/mysqltool/mysqldiff",
+        type: "POST",
+        dataType: "json",
+        data: {
+            com_host: com_host,
+            com_port: com_port,
+            com_username: com_username,
+            com_password: com_password,
+            com_database: com_database,
+            com_table: com_table,
+
+            fra_host: fra_host,
+            fra_port: fra_port,
+            fra_username: fra_username,
+            fra_password: fra_password,
+            fra_database: fra_database,
+            fra_table: fra_table,
+
+            diff_type: diff_type,
+        },
+    }).done(function(data) {
+        // 显示错误信息
+        console.log(data)
+        if(data["stderr"] != "" && data["stderr"] != null) {
+            pre_str = "<pre class='alert-danger'>";
+            pre_str += data['stderr'];
+            pre_str += "</pre>";
+
+            $("#stderr").html(pre_str);
+        }
+
+        // 显示返回信息
+        if(data["stdout"] != "" && data["stdout"] != null) {
+            pre_str = "<pre>";
+            pre_str += data['stdout'];
+            pre_str += "</pre>";
+
+            $("#stdout").html(pre_str);
+        }
+
+        $("#btn-diff").removeAttr('disabled'); // 比较按钮可用
+    });
+}
+</script>
+{% endblock %}

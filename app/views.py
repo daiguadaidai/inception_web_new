@@ -19,6 +19,7 @@ from flask_login import logout_user
 from forms import InceptionTableStructure
 from forms import LoginForm
 from inception import Inception
+from mysqltool import MySQLTool
 from inception_thread import InceptionThread
 from user_opration import UserOpration
 from user_opration import User
@@ -217,3 +218,37 @@ def inception_task_stop():
 
         import simplejson as json
         return json.dumps({'is_ok': is_ok, 'result': result})
+
+
+@app.route('/mysqltool/mysqldiff',methods=['GET', 'POST'])
+def mysqldiff():
+    """数据库差异性比较"""
+
+    mysqltool = MySQLTool()
+
+    if request.method == "GET":
+        return render_template('dba_tool/mysqltool/mysqldiff.html')
+
+    if request.method == "POST":
+        conf = {
+            'com_host' : request.form.get('com_host'),
+            'com_port' : request.form.get('com_port'),
+            'com_username' : request.form.get('com_username'),
+            'com_password' : request.form.get('com_password'),
+            'com_database' : request.form.get('com_database'),
+            'com_table' : request.form.get('com_table'),
+
+            'fra_host' : request.form.get('fra_host'),
+            'fra_port' : request.form.get('fra_port'),
+            'fra_username' : request.form.get('fra_username'),
+            'fra_password' : request.form.get('fra_password'),
+            'fra_database' : request.form.get('fra_database'),
+            'fra_table' : request.form.get('fra_table'),
+
+            'diff_type' : request.form.get('diff_type'),
+        }
+
+        is_ok, stdout, stderr = mysqltool.mysqldiff(**conf)
+
+        import simplejson as json
+        return json.dumps({'is_ok': is_ok, 'stdout': stdout, 'stderr': stderr})
